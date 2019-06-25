@@ -7,7 +7,8 @@ mongoose.connect("mongodb://localhost/yelp_campdb", { useNewUrlParser: true });
 
 var campgroundSchema = new mongoose.Schema({
   name: String,
-  image: String
+  image: String,
+  description: String
 });
 
 var Campground = mongoose.model("Campground",campgroundSchema);
@@ -30,6 +31,18 @@ app.listen(3000, '127.0.0.1', function() {
 //   {name: "SGNP", image: "https://farm9.staticflickr.com/8167/7121865553_e1c6a31f07.jpg"},
 //
 // ];
+// Campground.create(
+//   {
+//     name: "Salmon Creek",
+//     image: "https://farm2.staticflickr.com/1424/1430198323_c26451b047.jpg",
+//     description: "coolest place ever"
+//   },function(err, newlycreatedcamps){
+//   if(err){
+//     console.log(err);
+//   } else {
+//     console.log(newlycreatedcamps);
+//   }
+// });
 
 app.get("/campgrounds", function(req, res){
   Campground.find({},function(err,allcamps){
@@ -48,7 +61,12 @@ app.post('/campgrounds',function(req, res) {  //note that this is post req, it i
   //res.send("You hit the POST ROUTE")
   var name = req.body.name;
   var image = req.body.image;
-  var newCampground = {name: name, image: image};
+  var desc = req.body.description;
+  console.log(name);
+  console.log(image);
+  console.log(desc);
+  var newCampground = {name: name, image: image, description: desc};
+  console.log(newCampground);
   Campground.create(newCampground,function(err, newlycreatedcamps){
     if(err){
       console.log(err);
@@ -65,4 +83,15 @@ app.post('/campgrounds',function(req, res) {  //note that this is post req, it i
 
 app.get('/campgrounds/new', function(req,res){
   res.render("new.ejs")
+});
+
+app.get('/campgrounds/:id',function(req,res){
+  Campground.findById(req.params.id, function(err, foundCamp){
+    if(err){
+      console.log(err);
+    } else {
+      res.render("show",{campground: foundCamp});
+    }
+  });
+
 });
